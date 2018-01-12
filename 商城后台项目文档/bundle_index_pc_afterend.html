@@ -1,0 +1,1586 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>i5ting_ztree_toc:bundle_index_pc_afterend</title>
+		<link href="toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h2 id="-">后台管理系统</h2>
+<h4 id="-">资料</h4>
+<ul>
+<li><a href="http://157.122.54.189:9092/admin/#/admin/login">在线预览</a></li>
+<li><a href="http://157.122.54.189:8998/vue/vueproject/project_admin.html">在线开发文档</a></li>
+<li><a href="http://157.122.54.189:8998/vue/apidoc/admindoc/adminapi.html">在线API文档</a></li>
+</ul>
+<h1 id="-vue-">搭建vue开发环境</h1>
+<h2 id="npm">npm</h2>
+<p><img src="./imgs/vue_npm.png" alt="主要操作步骤"></p>
+<h2 id="-">目录结构</h2>
+<p><img src="./imgs/vue_dir.png" alt="主要目录结构"></p>
+<h2 id="-">打包配置</h2>
+<h4 id="babel-babelrc">babel配置 - .babelrc</h4>
+<pre><code class="lang-json">{
+    &quot;presets&quot;: [&quot;env&quot;],
+    &quot;plugins&quot;: [&quot;transform-runtime&quot;]
+}
+</code></pre>
+<h4 id="webpack-webpack-config-js">webpack配置 - webpack.config.js</h4>
+<pre><code class="lang-javascript">const path = require(&#39;path&#39;);
+const htmlWebapckPlugin = require(&#39;html-webpack-plugin&#39;);
+
+// 配置文件要求我们必须导出一个配置对象
+module.exports = {
+
+    // 入口
+    entry: path.resolve(__dirname, &#39;./src/js/main.js&#39;),
+
+    // 输出
+    output: {
+        path: path.resolve(__dirname, &#39;./dist&#39;),
+        filename: &#39;bundle_[chunkhash:8].js&#39;
+    },
+
+    //  插件配置
+    plugins: [
+
+        // 自动注入打包好的js文件到body里
+        new htmlWebapckPlugin({
+            template: &#39;./src/index.html&#39;,        // 要处理的html
+            filename: &#39;index.html&#39;,                 // 处理后的html名称
+            inject: &#39;body&#39;,                               // 自动注入js到什么地方
+        }),
+    ],
+
+    // loader的作用是为了让webpack可以打包其他类型的模块
+    module: {
+
+        // 配置loader, 该配置选项是必须的
+        rules: [
+
+            // 打包css
+            {
+                test: /\.css$/,
+                use: [&#39;style-loader&#39;, &#39;css-loader&#39;]
+            },
+
+            // 打包less
+            {
+                test: /\.less$/,
+                use: [&#39;style-loader&#39;, &#39;css-loader&#39;, &#39;less-loader&#39;]
+            },
+
+            // 打包url文件
+            {
+                test: /\.(png|jpg|gif|jpeg|svg)$/,
+                use: [
+                    // 指定小于10kb的图片才转为base64编码打包
+                    {loader: &#39;url-loader&#39;, options: {limit: 10240}}
+                ]
+            },
+
+            // 转换特殊语法编写的js文件
+            {
+                test: /\.js$/,
+                use: [&#39;babel-loader&#39;],
+                exclude: /node_modules/  // 如果项目引入了node-modules的东西,不转换它们
+            },
+
+            // 解析vue文件
+            {
+                test: /\.vue$/,
+                use: [&#39;vue-loader&#39;]
+            }
+        ]
+    },
+
+    // webpack-dev-server工具配置
+    devServer: {
+        contentBase: &#39;dist&#39;,
+        port: 7777,
+        open: true,
+        inline: true,
+        progress: true,
+    }
+};
+</code></pre>
+<h2 id="-">环境测试</h2>
+<h4 id="-">步骤预览</h4>
+<p><img src="./imgs/vue_test.png" alt="主要操作步骤"></p>
+<h4 id="index-html">index.html</h4>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+      &lt;meta charset=&quot;UTF-8&quot;&gt;
+      &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+      &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+      &lt;title&gt;Document&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+      &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h4 id="main-js">main.js</h4>
+<ul>
+<li>这里主要是把<code>根组件</code>渲染到页面中</li>
+<li>其中<code>render</code>配置项的作用与<code>template</code>一样, 用来指定模版, 使用了<code>vue-loader</code>就必须使用它替代template</li>
+<li><a href="https://cn.vuejs.org/v2/guide/installation.html#运行时-编译器-vs-只包含运行时">可以参考官方文档</a></li>
+</ul>
+<pre><code class="lang-javascript">// 导入Vue库
+import Vue from &#39;Vue&#39;;
+
+// 导入根组件
+import App from &#39;../component/App.vue&#39;;
+
+// 渲染根组件到占位标签上
+new Vue({
+    el: &#39;#app&#39;,
+    render(createElement) {
+        return createElement(App);
+    }
+});
+</code></pre>
+<h4 id="app-vue">App.vue</h4>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;main&gt;
+    &lt;h1&gt;{{ title }}&lt;/h1&gt;
+  &lt;/main&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+// 导出组件配置
+export default {
+    data() {
+        return {
+            title: &#39;Hello World!&#39;
+        }
+    }
+}
+&lt;/script&gt;
+
+&lt;style scoped&gt;
+h1 {
+    font-size: 30px;
+    color: red;
+}
+&lt;/style&gt;
+</code></pre>
+<h2 id="git-">git版本管理</h2>
+<h4 id="-">操作</h4>
+<p><img src="./imgs/vue_git.png" alt="主要操作步骤"></p>
+<h4 id="-gitignore-">.gitignore预览</h4>
+<pre><code class="lang-config"># 忽略第三方包, 他们已经记录在package.json文件中了
+node_modules/
+
+# 忽略打包后的文件, 因为我们的项目核心是源代码
+dist/
+
+# 忽略隐藏文件
+.*
+
+# 不忽略git配置文件和babel配置文件
+!.gitignore
+!.babelrc
+</code></pre>
+<h2 id="-vue-router">集成vue-router</h2>
+<ul>
+<li>why? 页面的切换由前端来控制, 需要前端路由插件来完成</li>
+</ul>
+<h4 id="-">安装</h4>
+<ul>
+<li>命令: <code>npm i vue-router -S</code></li>
+</ul>
+<h4 id="-">创建测试组件</h4>
+<ul>
+<li>首页组件 <code>src/component/home/Home.vue</code></li>
+<li>登陆组件 <code>src/component/login/Login.vue</code></li>
+<li>注册组件 <code>src/component/register/Register.vue</code></li>
+</ul>
+<h4 id="-">编写路由配置</h4>
+<ul>
+<li>创建 <code>src/router/router.js</code>, 专门配置路由</li>
+<li>此模块最终向外<code>导出</code>整个路由<code>配置</code>, 供外界使用</li>
+</ul>
+<pre><code class="lang-javascript">// 导入受路由控制的组件
+import HomeComponent from &#39;../component/home/Home.vue&#39;;
+import LoginComponent from &#39;../component/login/Login.vue&#39;;
+import RegisterComponent from &#39;../component/register/Register.vue&#39;;
+
+// 导出路由配置
+export default {
+    routes: [
+        // 首页
+        { path: &quot;/&quot;, redirect: &quot;/home&quot; },
+        { name: &quot;h&quot;, path: &quot;/home&quot;, component: HomeComponent },
+
+        // 登陆注册
+        { name: &quot;l&quot;, path: &quot;/login&quot;, component: LoginComponent },
+        { name: &quot;r&quot;, path: &quot;/register&quot;, component: RegisterComponent },
+    ]
+};
+</code></pre>
+<h4 id="-">启用路由</h4>
+<ul>
+<li>在 <code>src/main.js</code> 中导入<code>路由插件</code>, 使用 <code>use</code> 方法启用</li>
+<li>然后再导入<code>路由配置</code> , 配置 <code>router</code> 选项</li>
+</ul>
+<pre><code class="lang-javascript">// 1.1 导入第三方库
+import Vue from &#39;Vue&#39;;
+import VueRouter from &#39;vue-router&#39;;
+
+// 1.2 启动Vue插件
+Vue.use(VueRouter);
+
+// 2.1 导入根组件
+import AppComponent from &#39;./component/App.vue&#39;;
+
+// 2.2 导入路由配置
+import routerConfig from &#39;./router&#39;;
+
+// 挂载根组件, 启动应用
+new Vue({
+    el: &#39;#app&#39;,
+    render: c =&gt; c(AppComponent),
+    router: new VueRouter(routerConfig)
+});
+</code></pre>
+<h4 id="-">测试</h4>
+<ul>
+<li>修改 <code>src/component/app.vue</code></li>
+<li>使用 <code>router-view</code> 标签进行路由占位</li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+  &lt;main&gt;
+    &lt;router-view&gt;&lt;/router-view&gt;
+  &lt;/main&gt;
+&lt;/template&gt;
+</code></pre>
+<h2 id="-axios-api-">集成axios与api配置</h2>
+<ul>
+<li>why? 每个页面的<code>数据</code>都是动态的, 需要调用<code>接口</code>, 所以要集成 <code>http</code> 请求库</li>
+</ul>
+<h4 id="-">安装</h4>
+<ul>
+<li>命令: <code>npm i axios -S</code></li>
+</ul>
+<h4 id="-api">配置api</h4>
+<ul>
+<li>创建 <code>src/js/api_config.js</code>, 用于<code>存储接口</code>地址</li>
+<li>因为接口有很多, 且不容易记忆, 所以我们创建这个模块存储它</li>
+<li>该模块对外<code>导出</code>一个对象, <code>key</code> 为接口名称, <code>value</code> 为接口地址</li>
+</ul>
+<pre><code class="lang-javascript">// 导出域名
+export const domain = &#39;http://157.122.54.189:9095&#39;;
+
+// 默认导出整个接口配置
+export default {
+    // 账号管理
+    login: `/admin/account/login`,                               // 登陆
+    logout: `/admin/account/logout`,                          // 登出
+    islogin: `/admin/account/islogin`,                         // 是否登陆状态
+
+    // 类别管理
+    ctList: `/admin/category/getlist/`,                          // 获取分类列表, 需要参数: tablename
+    ctDetail: `/admin/category/getcategorymodel/`,    // 获取分类详情, 需要参数: cateID
+    ctEdit: `/admin/category/edit/`,                             // 编辑分类, 需要参数: cateID
+    ctAdd: `/admin/category/add/`,                            // 添加分类, 需要参数: tablename
+
+    // 文章管理
+    atList: `/admin/article/getlist/`,                        // 获取文章列表, 需要参数: tablename, 需要查询: pageIndex 与 pageSize
+    atCate: `/admin/article/getcategorylist/`,         // 获取文章的分类列表, 需要参数: tablename
+    atDetail: `/admin/article/getarticle/`,               // 获取文章详情, 需要参数: tablename 与 atID
+    atEdit: `/admin/article/edit/`,                          // 编辑文章, 需要参数: tablename 与 atID
+    atDdd: `/admin/category/add/`,                      // 添加文章, 需要参数: tablename
+    atDel: `/admin/category/del/`,                        // 删除文章, 需要参数: tablename 与 atID
+
+    // 文章上传
+    atImg: `/admin/article/uploadimg`,                 // 上传文章图片
+    atFile: `/admin/article/uploadfile`                    // 上传文章附件
+
+    // 商品管理
+    gsList: `/admin/goods/getlist/`,                       // 获取商品列表, 需要查询: pageIndex 与 pageSize 与 searchvalue
+    gsDetail: `/admin/goods/getgoodsmodel/`,    // 获取商品详情, 需要参数: gsID
+    gsEdit: `/admin/goods/edit/`,                         // 编辑商品, 需要参数: gsID
+    gsAdd: `/admin/goods/add/`,                         // 添加商品
+    gsDel: `/admin/goods/del/`,                           // 删除商品, 需要参数: gsID
+
+    // 订单管理
+    odList: `/admin/order/getorderlist`,                // 获取订单列表, 需要查询: pageIndex 与 pageSize 与 orderstatus 与 vipname
+    odDetail: `/admin/order/getorderdetial/`       // 获取订单详情, 需要参数: odID
+    odEdit: `/admin/order/updateorder/`             // 编辑订单
+}
+</code></pre>
+<h4 id="-axios">配置axios</h4>
+<ul>
+<li>创建  <code>src/axios_config.js</code></li>
+<li>对 <code>axios</code> 进行一些<code>配置</code>, 然后<code>导出</code>配置后的 <code>axios</code></li>
+</ul>
+<pre><code class="lang-javascript">// 导入axios与接口域名
+import axios from &#39;axios&#39;;
+import { domain } from &#39;./api_config.js&#39;;
+
+// 配置默认域名, 这样请求的时候就不用在url里加域名了
+axios.defaults.baseURL = domain;
+
+// 我们是跨域请求的接口, 默认不会携带cookie等信息, 后端需要这些信息来判断登陆状态, 所以要设为true
+axios.defaults.withCredentials=true;
+
+// 导出配置后的axios
+export default axios;
+</code></pre>
+<h4 id="vue-axios-api">vue中注入axios与api</h4>
+<ul>
+<li>修改 <code>src/main.js</code></li>
+<li>因为 <code>axios</code> 不是 <code>vue</code> 插件, 那个模块<code>使用</code>它, 必须先在那个模块里进行<code>导入</code></li>
+<li>为了使用方便, 我们把 <code>axios</code> 加到 <code>vue</code> 的<code>原型</code>中, 这样组件的<code>实例</code>就可以通过 <code>this</code> 来调用它了</li>
+<li>同样的, 为了方便拿到 <code>api</code>, 我们把它也一起<code>注入</code>到 vue 原型当中</li>
+</ul>
+<pre><code class="lang-javascript">// 3.1 导入配置后的axios与api, 并注入到Vue原型中 将来在实例通过this.$http调用
+import axios from &#39;./js/axios_config.js&#39;;
+import api from &#39;./js/api_config.js&#39;;
+Vue.prototype.$http = axios;
+Vue.prototype.$api = api;
+
+// 渲染根组件, 启动项目
+new Vue({
+    el: &#39;#app&#39;,
+    render(createNode) {
+        return createNode(AppComponent);
+    },
+    router: new VueRouter(routerConfig)
+});
+</code></pre>
+<h4 id="-">测试</h4>
+<ul>
+<li>修改 <code>src/component/login/login.vue</code></li>
+<li>在这里调用<code>登陆</code>与<code>登陆判断</code>接口进行测试</li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;div&gt;
+        &lt;button @click=&quot;login&quot;&gt;登陆&lt;/button&gt;
+        &lt;button @click=&quot;isLogin&quot;&gt;登陆检测&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    export default {
+        data() {
+            return {
+                user: {
+                    uname: &quot;admin&quot;,
+                    upwd: &quot;123456&quot;
+                }
+            };
+        },
+
+        methods: {
+            // 登陆
+            login() {
+                this.$http.post(this.$api.login, this.user)
+                    .then(rsp =&gt; alert(rsp.data.message.realname));
+            },
+
+            // 判断是否已登陆
+            isLogin() {
+                this.$http.get(this.$api.islogin)
+                    .then(rsp =&gt; alert(rsp.data.code));
+            }
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+<h2 id="-element-ui">集成element-ui</h2>
+<ul>
+<li>我们采用一个 <code>Vue</code> 组件库 <code>element-ui</code> 来辅助项目开发</li>
+<li><a href="http://element.eleme.io/#/zh-CN">官方文档</a></li>
+</ul>
+<h4 id="-">安装</h4>
+<ul>
+<li>命令: <code>npm i element-ui -S</code></li>
+</ul>
+<h4 id="-">启用</h4>
+<ul>
+<li>修改 <code>src/js/main.js</code>, 在这里导入<code>element-ui</code> 与<code>样式</code>文件</li>
+<li>然后使用 <code>use</code> 方法启用即可使用 <code>element-ui</code> 提供的各种<code>组件</code></li>
+</ul>
+<pre><code class="lang-javascript">// 1.1 导入第三方库
+import Vue from &#39;Vue&#39;;
+import VueRouter from &#39;vue-router&#39;;
+import ElementUI from &#39;element-ui&#39;;
+import &#39;element-ui/lib/theme-chalk/index.css&#39;
+
+// 1.2 启动Vue插件
+Vue.use(VueRouter);
+Vue.use(ElementUI);
+
+// 2.1 导入根组件
+import AppComponent from &#39;./component/App.vue&#39;;
+
+// 2.2 导入路由配置
+import routerConfig from &#39;./router&#39;;
+
+// 3.1 导入配置后的axios, 并注入到Vue原型中
+import axios from &#39;./js/axios_config.js&#39;;
+Vue.prototype.$http = axios;
+
+// 渲染根组件, 启动项目
+new Vue({
+    el: &#39;#app&#39;,
+    render: c =&gt; c(AppComponent),
+    router: new VueRouter(routerConfig)
+});
+</code></pre>
+<h4 id="webpack-">webpack配置</h4>
+<ul>
+<li><code>element-ui</code> 里的样式文件会引用两种<code>字体</code>文件: <code>woff</code> 与 <code>ttf</code></li>
+<li>我们需要在 <code>webpack.config.js</code> 文件里添加对应配置, 否则打包会报错</li>
+</ul>
+<pre><code class="lang-javascript">module: {
+    rules: [
+        // 打包引用的静态资源文件
+        {
+            test: /\.(png|jpg|gif|jpeg|svg|woff|ttf)$/,
+            use: [
+                // 指定小于10kb的图片才转为base64编码打包
+                {loader: &#39;url-loader&#39;, options: {limit: 10240}}
+            ]
+        },
+    ]
+}
+</code></pre>
+<h4 id="-">测试</h4>
+<ul>
+<li>修改 <code>src/component/home/Home.vue</code></li>
+<li>随便找个 <code>element-ui</code> 组件进行<code>测试</code>, 这里使用了一个<code>日期组件</code></li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;div&gt;
+        &lt;h1&gt;首页&lt;/h1&gt;
+        &lt;el-date-picker
+            v-model=&quot;value&quot;
+            align=&quot;right&quot;
+            type=&quot;date&quot;
+            placeholder=&quot;选择日期&quot;
+            :picker-options=&quot;pickerOptions&quot;&gt;
+        &lt;/el-date-picker&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    import apiConfig from &#39;../../js/api_config.js&#39;;
+
+    export default {
+        data() {
+            return {
+                value: &#39;&#39;,
+                pickerOptions: {
+                    // 大于今天的日期不能选
+                    disabledDate(time) {
+                        return time.getTime() &gt; Date.now();
+                    }
+                }
+            };
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+<h2 id="-normalize-css-">集成normalize.css与全局样式</h2>
+<ul>
+<li>我们需要这个类库让浏览器的默认样式保持一致</li>
+<li><a href="http://necolas.github.io/normalize.css/">官方文档</a></li>
+</ul>
+<h4 id="-">安装</h4>
+<ul>
+<li>命令: <code>npm i normalize.css -S</code></li>
+</ul>
+<h4 id="-">全局样式</h4>
+<ul>
+<li>创建 <code>src/less/index.less</code>, 该文件用于设置全局样式</li>
+</ul>
+<pre><code class="lang-less">html, body, main {
+    min-height: 100%;
+    height: 100%;
+}
+
+// a标签默认白色, 无装饰
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+// 左侧导航
+.aside {
+    // 文本超出不出现滚动条
+    overflow: initial;
+
+    // 去掉导航右边框
+    .el-menu {
+        border-right: 0;
+    }
+
+    // 去掉导航子标题高度
+    .el-menu-item-group__title {
+        padding: 0;
+        height: 0;
+    }
+}
+</code></pre>
+<h4 id="-">使用默认样式与全局样式</h4>
+<ul>
+<li>修改 <code>src/js/main.js</code>, 在这里导入<code>normalize.css</code> 与 <code>index.less</code> 即可</li>
+</ul>
+<pre><code class="lang-javascript">// 1.1 导入第三方库
+import Vue from &#39;Vue&#39;;
+import VueRouter from &#39;vue-router&#39;;
+import Vuex from &#39;vuex&#39;;
+import ElementUI from &#39;element-ui&#39;;
+import &#39;element-ui/lib/theme-chalk/index.css&#39;;
+import &#39;normalize.css&#39;;
+
+// 1.2 启动Vue插件
+Vue.use(VueRouter);
+Vue.use(Vuex);
+Vue.use(ElementUI);
+
+// 1.3 导入全局样式
+import &#39;./less/index.less&#39;;
+</code></pre>
+<h2 id="-">登陆页</h2>
+<ul>
+<li>修改 <code>src/component/login/Login.vue</code></li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/form">表单组件文档</a></li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;div class=&quot;login&quot;&gt;
+        &lt;!-- 居中的容器 --&gt;
+        &lt;div class=&quot;login_content&quot;&gt;
+
+            &lt;!-- Logo --&gt;
+            &lt;div class=&quot;login_content_logo&quot;&gt;
+                &lt;img src=&quot;../../img/logo.png&quot; alt=&quot;logo&quot;&gt;
+            &lt;/div&gt;
+
+            &lt;!-- Form表单: 如果需要表单效验与重置功能, 需要设置model属性为整个表单数据 --&gt;
+            &lt;el-form class=&quot;login_content_form&quot; :model=&quot;user&quot; :rules=&quot;loginFormRules&quot;
+                status-icon ref=&quot;ruleLoginForm&quot; label-width=&quot;70px&quot; label-position=&quot;left&quot; &gt;
+
+                &lt;!-- 用户名: 表单效验与重置, 需要设置prop属性为表单字段 --&gt;
+                &lt;el-form-item label=&quot;用户名&quot; prop=&quot;uname&quot;&gt;
+                    &lt;!-- 用户名输入框: 这里的v-model记得关联表单字段 --&gt;
+                    &lt;el-input type=&quot;password&quot; v-model=&quot;user.uname&quot; auto-complete=&quot;off&quot;&gt;&lt;/el-input&gt;
+                &lt;/el-form-item&gt;
+
+                &lt;!-- 密码: 表单效验与重置, 需要设置prop属性为表单字段 --&gt;
+                &lt;el-form-item label=&quot;密码&quot; prop=&quot;upwd&quot;&gt;
+                    &lt;!-- 密码输入框: 这里的v-model记得关联表单字段 --&gt;
+                    &lt;el-input type=&quot;password&quot; v-model=&quot;user.upwd&quot; auto-complete=&quot;off&quot;&gt;&lt;/el-input&gt;
+                &lt;/el-form-item&gt;
+
+                &lt;!-- 按钮 --&gt;
+                &lt;el-form-item&gt;
+                    &lt;el-button @click=&quot;submitForm(&#39;ruleLoginForm&#39;)&quot;&gt;提交&lt;/el-button&gt;
+                    &lt;el-button @click=&quot;resetForm(&#39;ruleLoginForm&#39;)&quot;&gt;重置&lt;/el-button&gt;
+                &lt;/el-form-item&gt;
+            &lt;/el-form&gt;
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    export default {
+        data() {
+            return {
+                // 该数据将来提交给后端接口, 所以字段名必须与接口文档描述一致
+                user: {
+                    uname: &quot;admin&quot;,
+                    upwd: &quot;123456&quot;
+                },
+                // 表单校验规则
+                loginFormRules: {
+                    uname: [
+                        { required: true, message: &#39;请输入用户名&#39;, trigger: &#39;blur&#39; },
+                        { pattern: /\w{4,18}/, message: &#39;长度在 4 到 18 个字符, 且只能为字母或数字&#39;, trigger: &#39;blur&#39; }
+                    ],
+                    upwd: [
+                        { required: true, message: &#39;请输入密码&#39;, trigger: &#39;blur&#39; },
+                        { pattern: /.{6,18}/, message: &#39;长度在 6 到 18 个字符&#39;, trigger: &#39;blur&#39; }
+                    ]
+                }
+            };
+        },
+
+        methods: {
+            // 登陆
+            login() {
+                // 登陆成功后
+                // 1 判断status是否为0, 不为0给出错误提示
+                // 2 如果为0, 说明登陆成功, 本地localStorage存储后端返回的用户信息
+                // 3 跳转到后台管理首页
+                this.$http.post(this.$api.login, this.user)
+                    .then(rsp =&gt; {
+                        let {status, message} = rsp.data; // 解构赋值的方式提取两个属性
+                        if(status == 0) {
+                            localStorage.setItem(&#39;user&#39;, JSON.stringify(message)); // 需要转换为字符串存储
+                            this.$router.push(&#39;/&#39;);
+                        }else {
+                            alert(&#39;哥们你确实逗我呢!&#39;)
+                        }
+                    });
+            },
+
+            // 点击提交按钮, 先做表单校验, 校验通过后才可登陆
+            submitForm(formName) {
+                this.$refs[formName].validate((result) =&gt; {
+                    if(result) {
+                       this.login();
+                    }else {
+                        alert(&#39;哥们你逗我呢!&#39;)
+                    }
+                });
+            },
+
+            // 重置表单
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            }
+        }
+    }
+&lt;/script&gt;
+
+&lt;style scoped lang=&quot;less&quot;&gt;
+    .login {
+        height: 100%;
+        background-color: rgb(38, 124, 183);
+
+        // 使盒子处于页面中间偏上的位置
+        &amp;_content {
+            width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-left: -200px;
+            margin-top: -170px;
+
+            // logo居中
+            &amp;_logo {
+                text-align: center;
+                padding-bottom: 10px;
+            }
+
+            // form表单添加背景与圆角边框
+            &amp;_form {
+                padding: 30px 10px 10px;
+                background-color: #fff;
+                border: 1px solid hsla(0,0%,100%,.2);
+                border-radius: 10px;
+            }
+        }
+    }
+&lt;/style&gt;
+</code></pre>
+<h2 id="-">后台管理页面架构</h2>
+<ul>
+<li>创建 <code>src/component/admin/Admin.vue</code></li>
+<li>这个组件是<code>后台管理系统</code>的架构, 在这里实现<code>公共</code>的左侧与头部组件</li>
+<li>对于<code>不同</code>的页面内容<code>部分</code>, 将来通过<code>路由</code>动态切换不同组件进行渲染</li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/container">布局容器组件文档</a></li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;el-container&gt;
+
+        &lt;!-- 左侧 --&gt;
+        &lt;el-aside width=&quot;200px&quot;&gt;
+            &lt;!-- 左侧导航, 公共部分 --&gt;
+            &lt;app-aside&gt;&lt;/app-aside&gt;
+        &lt;/el-aside&gt;
+
+        &lt;!-- 右侧 --&gt;
+        &lt;el-container&gt;
+            &lt;!-- 右侧头部, 公共部分 --&gt;
+            &lt;el-header&gt;Header&lt;/el-header&gt;
+
+            &lt;!-- 右侧主体, 变化部分, 将来要通过子路由控制 --&gt;
+            &lt;el-main&gt;Main&lt;/el-main&gt;
+        &lt;/el-container&gt;
+
+    &lt;/el-container&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    // 导入公共的左侧与头部组件, 需要注册才能使用
+    import AsideComponent from &#39;./frame/Aside.vue&#39;;
+    import HeaderComponent from &#39;./frame/Header.vue&#39;;
+
+    export default {
+
+        // 注册子组件, key为组件名称(将=使用时的标签名称), value为未注册的组件
+        components: {
+            &#39;app-aside&#39;: AsideComponent,
+            &#39;app-header&#39;: HeaderComponent,
+        }
+    }
+&lt;/script&gt;
+
+&lt;style scoped lang=&quot;less&quot;&gt;
+    // 页面架构高度固定, 左侧与右侧高度独自控制
+    .el-container {
+        height: 100%;
+
+        // 左侧导航
+        .el-aside {
+            height: 100%;
+            background-color: #D3DCE6;
+            color: #333;
+        }
+
+        // 右侧
+        .el-container {
+            height: 100%;
+
+            // 右侧头部
+            .el-header {
+                background-color: #B3C0D1;
+                color: #333;
+                line-height: 60px;
+            }
+
+            // 右侧主体
+            .el-main {
+                background-color: #E9EEF3;
+                color: #333;
+            }
+        }
+    }
+&lt;/style&gt;
+</code></pre>
+<h2 id="-">公共左侧导航</h2>
+<ul>
+<li>创建 <code>src/component/admin/frame/Aside.vue</code></li>
+<li>因为 <code>aside 组件</code>是 <code>admin 组件</code>的公共架构部分, 所以把它创建在 <code>admin/frame</code> 里</li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/menu">导航菜单组件文档</a></li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;div class=&quot;aside&quot;&gt;
+
+        &lt;!-- logo --&gt;
+        &lt;div class=&quot;aside_logo&quot;&gt;
+            &lt;img src=&quot;../../../img/logo.png&quot; alt=&quot;logo&quot;&gt;
+        &lt;/div&gt;
+
+        &lt;!-- nav: default-active属性用来设置默认打开的菜单 --&gt;
+        &lt;el-menu default-active=&quot;2&quot; class=&quot;aside_menu&quot;
+            background-color=&quot;#545c64&quot; text-color=&quot;#fff&quot; active-text-color=&quot;#ffd04b&quot;&gt;
+
+            &lt;!-- subnav: key属性需要一个唯一值用于for循环渲染时性能优化, index属性同样需要一个唯一值用于展开导航列表 --&gt;
+            &lt;el-submenu v-for=&quot;item in menu&quot; :key=&quot;item.title&quot; :index=&quot;item.title&quot;&gt;
+
+                &lt;!-- nav_title --&gt;
+                &lt;template slot=&quot;title&quot;&gt;
+                    &lt;i class=&quot;el-icon-menu&quot;&gt;&lt;/i&gt;
+                    &lt;span&gt;{{ item.title }}&lt;/span&gt;
+                &lt;/template&gt;
+
+                &lt;!-- nav_item --&gt;
+                &lt;el-menu-item v-for=&quot;subItem in item.submenu&quot; :key=&quot;subItem.text&quot; :index=&quot;subItem.text&quot;&gt;
+                    &lt;!-- 每个子title都是一个a链接, 可以点击, 所以使用router-link, 记得设置to属性 --&gt;
+                    &lt;router-link :to=&quot;subItem.path&quot;&gt;
+                        &lt;i class=&quot;el-icon-document&quot;&gt;&lt;/i&gt;
+                        &lt;span&gt;{{ subItem.text }}&lt;/span&gt;
+                    &lt;/router-link&gt;
+                &lt;/el-menu-item&gt;
+
+            &lt;/el-submenu&gt;
+        &lt;/el-menu&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    export default {
+        data() {
+            return {
+                menu: [
+                    { title: &#39;学员问题&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/&#39; },
+                        ]
+                    },
+                    { title: &#39;前端技术&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/&#39; },
+                        ]
+                    },
+                    { title: &#39;难点答疑&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/&#39; },
+                        ]
+                    },
+                    { title: &#39;资源下载&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/&#39; },
+                        ]
+                    },
+                    { title: &#39;商品管理&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/&#39; },
+                        ]
+                    },
+                    { title: &#39;订单管理&#39;, submenu:
+                        [
+                            { text: &#39;订单列表&#39;, path: &#39;/&#39; },
+                        ]
+                    },
+                ]
+            }
+        }
+    }
+&lt;/script&gt;
+
+&lt;style scoped lang=&quot;less&quot;&gt;
+    // 让导航列表撑满屏幕
+    .aside {
+        height: 100%;
+        text-align: left;
+        background-color: rgb(84, 92, 100);
+
+        // logo居中显示
+        &amp;_logo {
+            text-align: center;
+        }
+
+        // 去掉导航展开时右边的1像素边框
+        .el-menu {
+            border-right: 0;
+
+            // 去掉导航列表的最小宽度限制
+            &amp;-item {
+                min-width: 0;
+            }
+        }
+    }
+&lt;/style&gt;
+</code></pre>
+<h2 id="-">公共右侧头部</h2>
+<ul>
+<li>创建 <code>src/component/admin/frame/Header.vue</code></li>
+<li>因为 <code>header 组件</code>也是 <code>admin 组件</code>的公共架构部分, 所以把它也创建在 <code>admin/frame</code> 里</li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/dropdown">下拉菜单组件文档</a></li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;div class=&quot;header&quot;&gt;
+        &lt;!-- 下拉菜单: command属性用来监听菜单点击事件, 事件回调里会收到被点击菜单的标识符 --&gt;
+        &lt;el-dropdown @command=&quot;handleCommand&quot;&gt;
+
+            &lt;!-- 菜单标题 --&gt;
+            &lt;span class=&quot;el-dropdown-link&quot;&gt;
+                &lt;span&gt;你好, {{ username }}&lt;/span&gt;
+                &lt;i class=&quot;el-icon-arrow-down el-icon--right&quot;&gt;&lt;/i&gt;
+            &lt;/span&gt;
+
+            &lt;!-- 菜单列表 --&gt;
+            &lt;el-dropdown-menu slot=&quot;dropdown&quot;&gt;
+                &lt;el-dropdown-item&gt;修改密码&lt;/el-dropdown-item&gt;
+                &lt;!-- 记得设置command指令值, 不然无法区分点击的是那个菜单 --&gt;
+                &lt;el-dropdown-item command=&quot;logout&quot;&gt;注销&lt;/el-dropdown-item&gt;
+            &lt;/el-dropdown-menu&gt;
+
+        &lt;/el-dropdown&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    export default {
+        data() {
+            return {
+                username: &#39;admin&#39;
+            }
+        },
+
+        methods: {
+            // 注销
+            logout() {
+                // 注销成功后
+                // 1 清除localStorage存储的用户信息
+                // 2 跳转到登陆页
+                this.$http.get(this.$api.logout)
+                    .then(rsp =&gt; {
+                        localStorage.removeItem(&#39;user&#39;);
+                        this.$router.push(&#39;/login&#39;);
+                    });
+            },
+
+            // 下拉菜单控制器
+            handleCommand(command) {
+                switch (command) {
+                    case &#39;logout&#39;:
+                        this.logout();
+                        break;
+                }
+            }
+        }
+    }
+&lt;/script&gt;
+
+&lt;style scoped lang=&quot;less&quot;&gt;
+    .header {
+        text-align: right;
+    }
+&lt;/style&gt;
+</code></pre>
+<h2 id="-">商品模块路由配置</h2>
+<ul>
+<li>商品模块<code>属于</code>admin的一部分, 所以相关组件在<code>admin目录</code>中创建</li>
+<li>同时商品模块也会配置成<code>admin</code>组件的<code>子路由</code></li>
+</ul>
+<h4 id="-">创建商品相关组件</h4>
+<ul>
+<li>商品内容列表 <code>src/component/admin/goods/content/GoodsContentList.vue</code></li>
+<li>商品内容添加 <code>src/component/admin/goods/content/GoodsContentAdd.vue</code></li>
+<li>商品内容编辑 <code>src/component/admin/goods/content/GoodsContentEdit.vue</code></li>
+<li>商品分类列表 <code>src/component/admin/goods/category/GoodsContentList.vue</code></li>
+<li>商品分类添加 <code>src/component/admin/goods/category/GoodsContentAdd.vue</code></li>
+<li>商品分类编辑 <code>src/component/admin/goods/category/GoodsContentEdit.vue</code></li>
+<li>商品评论列表 <code>src/component/admin/goods/comment/GoodsContentList.vue</code></li>
+<li>商品评论编辑 <code>src/component/admin/goods/comment/GoodsContentEdit.vue</code>
+<img src="./imgs/small/afterend/goods_directory_structure.png" alt="目录结构预览">;</li>
+</ul>
+<h4 id="-">创建商品路由配置文件</h4>
+<ul>
+<li>创建 <code>src/js/router/goods.js</code></li>
+<li>该模块向外<code>导出</code>商品路由配置对象</li>
+</ul>
+<pre><code class="lang-javascript">// 商品管理模块组件
+import GoodsContentListComponent from &#39;../component/admin/goods/content/GoodsContentList.vue&#39;;
+import GoodsContentAddComponent from &#39;../component/admin/goods/content/GoodsContentAdd.vue&#39;;
+import GoodsContentEditComponent from &#39;../component/admin/goods/content/GoodsContentEdit.vue&#39;;
+import GoodsCategoryListComponent from &#39;../component/admin/goods/category/GoodsCategoryList.vue&#39;;
+import GoodsCategoryAddComponent from &#39;../component/admin/goods/category/GoodsCategoryAdd.vue&#39;;
+import GoodsCategoryEditComponent from &#39;../component/admin/goods/category/GoodsCategoryEdit.vue&#39;;
+import GoodsCommentListComponent from &#39;../component/admin/goods/comment/GoodsCommentList.vue&#39;;
+import GoodsCommentEditComponent from &#39;../component/admin/goods/comment/GoodsCommentEdit.vue&#39;;
+
+module.exports = [
+    // 商品管理
+    { name: &quot;gctl&quot;, path: &quot;goods/content/list&quot;, component: GoodsContentListComponent },
+    { name: &quot;gcta&quot;, path: &quot;goods/content/add&quot;, component: GoodsContentAddComponent },
+    { name: &quot;gcte&quot;, path: &quot;goods/content/edit&quot;, component: GoodsContentEditComponent },
+
+    // 商品分类管理
+    { name: &quot;gcgl&quot;, path: &quot;goods/category/list&quot;, component: GoodsCategoryListComponent },
+    { name: &quot;gcga&quot;, path: &quot;goods/category/add&quot;, component: GoodsCategoryAddComponent },
+    { name: &quot;gcge&quot;, path: &quot;goods/category/edit&quot;, component: GoodsCategoryEditComponent },
+
+    // 商品评论管理
+    { name: &quot;gcml&quot;, path: &quot;goods/comment/list&quot;, component: GoodsCommentListComponent },
+    { name: &quot;gcme&quot;, path: &quot;goods/comment/edit&quot;, component: GoodsCommentEditComponent },
+];
+</code></pre>
+<h4 id="-">商品路由配置</h4>
+<ul>
+<li>修改 <code>src/js/router/index.js</code></li>
+<li><code>导入</code>商品模块相关路由配置, 然后配置成<code>admin</code>组件的<code>子路由</code></li>
+</ul>
+<pre><code class="lang-javascript">// 导入子路由商品模块的配置
+import goodsRouterConfig from &#39;./goods.js&#39;;
+
+// 导出路由配置
+export default {
+    routes: [
+        // 后台管理
+        { path: &quot;/&quot;, redirect: &quot;/admin&quot; },
+        { name: &quot;a&quot;, path: &quot;/admin&quot;, component: AdminComponent,
+            // 子路由
+            children: [
+                // 商品模块
+                ...goodsRouterConfig
+            ]
+        },
+
+        // 账号管理
+        { name: &quot;l&quot;, path: &quot;/login&quot;, component: LoginComponent },
+        { name: &quot;r&quot;, path: &quot;/register&quot;, component: RegisterComponent },
+    ]
+};
+</code></pre>
+<h4 id="-">更新左侧导航</h4>
+<ul>
+<li>修改 <code>src/component/admin/frame/Aside.vue</code></li>
+<li>更新<code>menu</code>导航数据里的<code>path</code></li>
+</ul>
+<pre><code class="lang-vue">&lt;script&gt;
+    export default {
+        data() {
+            return {
+                menu: [
+                    { title: &#39;学员问题&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/admin/student/content/list&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/admin/student/category/list&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/admin/student/comment/list&#39; },
+                        ]
+                    },
+                    { title: &#39;前端技术&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/admin/web/content/list&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/admin/web/category/list&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/admin/web/comment/list&#39; },
+                        ]
+                    },
+                    { title: &#39;难点答疑&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/admin/difficulty/content/list&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/admin/difficulty/category/list&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/admin/difficulty/comment/list&#39; },
+                        ]
+                    },
+                    { title: &#39;资源下载&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/admin/assets/content/list&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/admin/assets/category/list&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/admin/assets/comment/list&#39; },
+                        ]
+                    },
+                    { title: &#39;商品管理&#39;, submenu:
+                        [
+                            { text: &#39;内容管理&#39;, path: &#39;/admin/goods/content/list&#39; },
+                            { text: &#39;类别管理&#39;, path: &#39;/admin/goods/category/list&#39; },
+                            { text: &#39;评论管理&#39;, path: &#39;/admin/goods/comment/list&#39; },
+                        ]
+                    },
+                    { title: &#39;订单管理&#39;, submenu:
+                        [
+                            { text: &#39;订单列表&#39;, path: &#39;/admin/order/content/list&#39; },
+                        ]
+                    },
+                ]
+            }
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+<h2 id="-">登陆状态校验</h2>
+<ul>
+<li>目前用户在<code>未登录</code>状态下可直接通过url<code>打开</code>后台管理<code>页面</code>, 这显然是<code>不合理</code>的行为, 所以需要进行处理</li>
+</ul>
+<h4 id="-">不同页面处理逻辑</h4>
+<p><img src="./imgs/small/login_verify.png/" alt="守卫逻辑分析"></p>
+<h4 id="-">编写路由守卫</h4>
+<ul>
+<li>创建 <code>src/js/router/guard.js</code></li>
+<li>该模块向外<code>导出</code>一个<code>路由守卫</code>函数, 在<code>切换页面</code>时进行登陆<code>校验</code>处理</li>
+</ul>
+<pre><code class="lang-javascript">import axios from &#39;axios&#39;;
+import apiConfig from &#39;../js/api_config.js&#39;;
+
+// 导出一个全局的路由守卫对象
+export default function(to, from, next) {
+
+    // 实现步骤:
+    // 1. 请求接口判断当前是否处于登陆状态(也可以通过cookie判断)
+    // 2. 通过to对象的name属性得知用户去往的页面
+    // 2.1 如果去往登陆页面
+    // 2.2 已登陆 -&gt; 自动跳转到首页 -&gt; 调next(&#39;/&#39;)
+    // 2.3 未登陆 -&gt; 允许访问 -&gt; 调next()
+    // 3.1 如果去往非登陆页面
+    // 3.2 已登陆 -&gt; 允许访问 -&gt; 调next()
+    // 3.3 未登陆 -&gt; 自动跳转到登陆页 -&gt; 调next(&#39;/login&#39;)
+    axios.get(apiConfig.isLogin).then(rsp =&gt; {
+        let logined = rsp.data.code == &#39;logined&#39;;
+
+        // 去往登陆页
+        if(to.name === &#39;l&#39;) {
+            if(logined) {
+                next(&#39;/&#39;);
+            }else {
+                next();
+            }
+        }
+
+        // 去往非登陆页
+        if(to.name !== &#39;l&#39;) {
+            if(logined) {
+                next();
+            }else {
+                next(&#39;/login&#39;);
+            }
+        }
+
+    });
+};
+</code></pre>
+<h4 id="-">启动路由守卫</h4>
+<ul>
+<li>修改 <code>src/mian.js</code></li>
+<li><code>导入</code>路由<code>守卫</code>函数, 然后通过路由实例的<code>beforeEach</code>方法<code>启动</code>守卫</li>
+</ul>
+<pre><code class="lang-javascript">// 2.1 导入根组件
+import AppComponent from &#39;./component/App.vue&#39;;
+
+// 2.2 导入路由配置与路由守卫, 创建路由实例
+import routerConfig from &#39;./router&#39;;
+import routerGuard from &#39;./router/guard.js&#39;;
+let vueRouter = new VueRouter(routerConfig);
+vueRouter.beforeEach(routerGuard);
+
+// 3.1 导入配置后的axios与api, 并注入到Vue原型中
+import axios from &#39;./js/axios_config.js&#39;;
+import api from &#39;./js/api_config.js&#39;;
+Vue.prototype.$http = axios;
+Vue.prototype.$api = api;
+
+// 渲染根组件, 启动项目
+new Vue({
+    el: &#39;#app&#39;,
+    render: c =&gt; c(AppComponent),
+    router: vueRouter
+});
+</code></pre>
+<h2 id="-">商品内容列表</h2>
+<ul>
+<li>修改 <code>src/component/admin/goods/content/GoodContentList.vue</code></li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/breadcrumb">面包屑导航那组件文档</a></li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/table">表格组件文档</a></li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/pagination">分页组件文档</a></li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;div class=&quot;goods-list&quot;&gt;
+        &lt;!-- 面包屑导航 --&gt;
+        &lt;section class=&quot;main_breadcrumb&quot;&gt;
+            &lt;el-breadcrumb separator=&quot;/&quot;&gt;
+                &lt;el-breadcrumb-item :to=&quot;{ path: &#39;/&#39; }&quot;&gt;首页&lt;/el-breadcrumb-item&gt;
+                &lt;el-breadcrumb-item&gt;商品管理&lt;/el-breadcrumb-item&gt;
+                &lt;el-breadcrumb-item&gt;商品内容&lt;/el-breadcrumb-item&gt;
+                &lt;el-breadcrumb-item&gt;内容列表&lt;/el-breadcrumb-item&gt;
+            &lt;/el-breadcrumb&gt;
+        &lt;/section&gt;
+
+        &lt;!-- 按钮组 --&gt;
+        &lt;section class=&quot;main_btns&quot;&gt;
+            &lt;div&gt;
+                &lt;el-button size=&quot;small&quot; plain icon=&quot;el-icon-check&quot;&gt;全选&lt;/el-button&gt;
+                &lt;el-button size=&quot;small&quot; plain icon=&quot;el-icon-plus&quot;
+                    @click=&quot;$router.push({name: &#39;gcta&#39;})&quot;&gt;新增&lt;/el-button&gt;
+                &lt;el-button size=&quot;small&quot; plain icon=&quot;el-icon-delete&quot;&gt;删除&lt;/el-button&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;el-input v-model=&quot;query.searchvalue&quot; @blur=&quot;getGoodsList&quot; size=&quot;small&quot;
+                    prefix-icon=&quot;el-icon-search&quot; placeholder=&quot;请输入内容&quot;&gt;&lt;/el-input&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+
+        &lt;!-- Table表格: data属性为要渲染的列表数据 --&gt;
+        &lt;el-table :data=&quot;goodsList&quot; ref=&quot;multipleTable&quot; tooltip-effect=&quot;dark&quot; height=&quot;400&quot;
+            style=&quot;width: 100%; line-height: 24px; text-align: center;&quot;&gt;
+            &lt;!-- 多选框 --&gt;
+            &lt;el-table-column type=&quot;selection&quot; width=&quot;55&quot;&gt;&lt;/el-table-column&gt;
+
+            &lt;!-- 商品数据列表: prop属性为列表数据里的字段名称 --&gt;
+            &lt;el-table-column label=&quot;标题&quot; prop=&quot;title&quot;&gt;&lt;/el-table-column&gt;
+            &lt;el-table-column label=&quot;类别&quot; prop=&quot;categoryname&quot; width=&quot;100&quot;&gt;&lt;/el-table-column&gt;
+            &lt;el-table-column label=&quot;库存&quot; prop=&quot;stock_quantity&quot; width=&quot;100&quot;&gt;&lt;/el-table-column&gt;
+            &lt;el-table-column label=&quot;市场价&quot; prop=&quot;market_price&quot; width=&quot;100&quot;&gt;&lt;/el-table-column&gt;
+            &lt;el-table-column label=&quot;销售价&quot; prop=&quot;sell_price&quot; width=&quot;100&quot;&gt;&lt;/el-table-column&gt;
+
+            &lt;!-- 商品状态: 里面的template标签可以放置任意html结构 --&gt;
+            &lt;el-table-column label=&quot;状态&quot; width=&quot;100&quot;&gt;
+                &lt;template slot-scope=&quot;scope&quot;&gt;
+                    &lt;!-- v-bind:class可以通过数组批量设置class --&gt;
+                    &lt;i :class=&quot;[&#39;el-icon-picture&#39;, scope.row.is_slide? &#39;active&#39;: &#39;&#39;]&quot;&gt;&lt;/i&gt;
+                    &lt;i :class=&quot;[&#39;el-icon-upload2&#39;, scope.row.is_top? &#39;active&#39;: &#39;&#39;]&quot;&gt;&lt;/i&gt;
+                    &lt;i :class=&quot;[&#39;el-icon-star-on&#39;, scope.row.is_hot? &#39;active&#39;: &#39;&#39;]&quot;&gt;&lt;/i&gt;
+                &lt;/template&gt;
+            &lt;/el-table-column&gt;
+
+            &lt;!-- 编辑商品 --&gt;
+            &lt;el-table-column label=&quot;操作&quot; width=&quot;100&quot;&gt;
+                &lt;template slot-scope=&quot;scope&quot;&gt;
+                    &lt;router-link :to=&quot;{name:&#39;gcte&#39;, params: {id: scope.row.id}}&quot;&gt;编辑&lt;/router-link&gt;
+                &lt;/template&gt;
+            &lt;/el-table-column&gt;
+        &lt;/el-table&gt;
+
+        &lt;!-- 分页: current-page展示当前页, totle用来设置数据总量然后动态计算分页  --&gt;
+        &lt;!-- 分页: current-change监听页变化, size-change监听每页数据变量  --&gt;
+        &lt;el-pagination
+            :current-page=&quot;query.pageIndex&quot;
+            :page-sizes=&quot;[10, 20, 30, 40]&quot;
+            :page-size=&quot;10&quot;
+            @current-change=&quot;handleCurrentChange&quot;
+            @size-change=&quot;handleSizeChange&quot;
+            :total=&quot;totalcount&quot;
+            layout=&quot;total, sizes, prev, pager, next, jumper&quot;
+            background&gt;
+        &lt;/el-pagination&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    export default {
+        data() {
+            return {
+                // 商品列表接口所需的查询字符串
+                query: {
+                    pageIndex: 1,
+                    pageSize: 10,
+                    searchvalue: &#39;&#39;,
+                },
+                // 商品列表数据
+                goodsList: [],
+                // 数据总量
+                totalcount: 0
+            };
+        },
+
+        methods: {
+            // 获取商品列表数据
+            getGoodsList() {
+                this.$http.get(this.$api.gsList, { params: this.query })
+                    .then(rsp =&gt; {
+                        this.goodsList = rsp.data.message;
+                        this.totalcount = rsp.data.totalcount;
+                    });
+            },
+
+            // 修改当前页
+            handleCurrentChange(pageIndex) {
+                this.query.pageIndex = pageIndex;
+                this.getGoodsList();
+            },
+
+            // 修改每页数量
+            handleSizeChange(pageSize) {
+                this.query.pageSize = pageSize;
+                this.getGoodsList();
+            }
+        },
+
+        created() {
+            this.getGoodsList();
+        }
+    }
+&lt;/script&gt;
+
+&lt;style scoped&gt;
+    .goods-list {
+        padding-bottom: 60px;
+    }
+&lt;/style&gt;
+</code></pre>
+<h2 id="-">商品内容添加</h2>
+<ul>
+<li>修改 <code>src/component/admin/goods/content/GoodContentAdd.vue</code></li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/select">select选择器组件文档</a></li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/switch">switch开关组件文档</a></li>
+<li><a href="http://element-cn.eleme.io/#/zh-CN/component/upload">upload上传组件文档</a></li>
+</ul>
+<h4 id="-">基本实现</h4>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;div class=&quot;edit&quot;&gt;
+        &lt;!-- 面包屑导航 --&gt;
+        &lt;section class=&quot;main_breadcrumb&quot;&gt;
+            &lt;el-breadcrumb separator=&quot;/&quot;&gt;
+                &lt;el-breadcrumb-item :to=&quot;{ path: &#39;/&#39; }&quot;&gt;首页&lt;/el-breadcrumb-item&gt;
+                &lt;el-breadcrumb-item&gt;商品管理&lt;/el-breadcrumb-item&gt;
+                &lt;el-breadcrumb-item&gt;商品内容&lt;/el-breadcrumb-item&gt;
+                &lt;el-breadcrumb-item&gt;内容编辑&lt;/el-breadcrumb-item&gt;
+            &lt;/el-breadcrumb&gt;
+        &lt;/section&gt;
+
+        &lt;!-- Form表单: 如果需要表单效验与重置功能, 需要设置model属性为整个表单数据 --&gt;
+        &lt;!-- Form表单项: 表单效验与重置, 需要设置prop属性为表单字段 --&gt;
+        &lt;el-form :model=&quot;editForm&quot; :rules=&quot;editFormRules&quot; ref=&quot;editForm&quot;
+            label-width=&quot;100px&quot; label-position=&quot;left&quot; class=&quot;edit_form&quot;&gt;
+            &lt;el-form-item label=&quot;内容标题&quot; prop=&quot;title&quot;&gt;
+                &lt;el-input v-model=&quot;editForm.title&quot; size=&quot;small&quot;&gt;&lt;/el-input&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;副标题&quot; prop=&quot;sub_title&quot;&gt;
+                &lt;el-input v-model=&quot;editForm.sub_title&quot; size=&quot;small&quot;&gt;&lt;/el-input&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;所属类比&quot; prop=&quot;category_id&quot;&gt;
+                &lt;el-select v-model=&quot;editForm.category_id&quot; size=&quot;small&quot; placeholder=&quot;请选择所属类比&quot;&gt;
+                    &lt;el-option v-for=&quot;item in categoryList&quot; :label=&quot;item.title&quot; :value=&quot;item.category_id&quot; :key=&quot;item.category_id&quot;&gt;&lt;/el-option&gt;
+                &lt;/el-select&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;是否发布&quot;&gt;
+                &lt;el-switch v-model=&quot;editForm.status&quot;&gt;&lt;/el-switch&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;状态设置&quot;&gt;
+                &lt;el-switch v-model=&quot;editForm.is_slide&quot; active-text=&quot;轮播图&quot;&gt;&lt;/el-switch&gt;
+                &lt;el-switch v-model=&quot;editForm.is_top&quot; active-text=&quot;置顶&quot;&gt;&lt;/el-switch&gt;
+                &lt;el-switch v-model=&quot;editForm.is_hot&quot; active-text=&quot;推荐&quot;&gt;&lt;/el-switch&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;封面上传&quot;&gt;
+                上传
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;附件上传&quot;&gt;
+                上传
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;商品货号&quot; prop=&quot;goods_no&quot;&gt;
+                &lt;el-input v-model=&quot;editForm.goods_no&quot; size=&quot;small&quot;&gt;&lt;/el-input&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;库存数量&quot; prop=&quot;stock_quantity&quot;&gt;
+                &lt;el-input v-model=&quot;editForm.stock_quantity&quot; size=&quot;small&quot;&gt;&lt;/el-input&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;市场价格&quot; prop=&quot;market_price&quot;&gt;
+                &lt;el-input v-model=&quot;editForm.market_price&quot; size=&quot;small&quot;&gt;&lt;/el-input&gt;
+            &lt;/el-form-item&gt;
+             &lt;el-form-item label=&quot;销售价格&quot; prop=&quot;sell_price&quot;&gt;
+                &lt;el-input v-model=&quot;editForm.sell_price&quot; size=&quot;small&quot;&gt;&lt;/el-input&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;摘要信息&quot; prop=&quot;desc&quot;&gt;
+                &lt;el-input type=&quot;textarea&quot; v-model=&quot;editForm.zhaiyao&quot; size=&quot;small&quot;&gt;&lt;/el-input&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item label=&quot;详细信息&quot; prop=&quot;desc&quot;&gt;
+                &lt;el-input type=&quot;textarea&quot; v-model=&quot;editForm.content&quot; size=&quot;small&quot;&gt;&lt;/el-input&gt;
+            &lt;/el-form-item&gt;
+            &lt;el-form-item&gt;
+                &lt;el-button type=&quot;primary&quot; @click=&quot;submitForm(&#39;editForm&#39;)&quot;&gt;立即创建&lt;/el-button&gt;
+                &lt;el-button @click=&quot;resetForm(&#39;editForm&#39;)&quot;&gt;重置&lt;/el-button&gt;
+            &lt;/el-form-item&gt;
+        &lt;/el-form&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    export default {
+        data() {
+            return {
+                // 当前编辑商品的ID
+                id: this.$route.params.id,
+
+                // 所属分类列表
+                categoryList: [
+                    {
+                        &quot;category_id&quot;:&quot;98&quot;,
+                        &quot;title&quot;:&quot;前端常用功能&quot;,
+                        &quot;sort_id&quot;:2000,
+                        &quot;class_layer&quot;:1,
+                        &quot;parent_id&quot;:0
+                    },
+                    {
+                        &quot;category_id&quot;:&quot;99&quot;,
+                        &quot;title&quot;:&quot;延迟加载(懒加载)&quot;,
+                        &quot;sort_id&quot;:2001,
+                        &quot;class_layer&quot;:2,
+                        &quot;parent_id&quot;:76
+                    }
+                ],
+
+                // 表单数据
+                editForm: {
+                    title: &quot;&quot;,
+                    sub_title: &quot;&quot;,
+                    category_id: &quot;&quot;,
+                    goods_no: &quot;&quot;,
+                    stock_quantity: 0,
+                    market_price: 0,
+                    sell_price: 0,
+                    status: false,
+                    is_slide: false,
+                    is_top: false,
+                    is_hot: false,
+                    zhaiyao: &quot;&quot;,
+                    content: &quot;&quot;,
+                    imgList: [],
+                    fileList: []
+                },
+
+                // 表单校验规则
+                editFormRules: {
+                    title: [
+                        { required: true, message: &#39;请输入内容标题&#39;, trigger: &#39;blur&#39; },
+                    ],
+                    sub_title: [
+                        { required: true, message: &#39;请输入副标题&#39;, trigger: &#39;blur&#39; },
+                    ],
+                    category_id: [
+                        { required: true, message: &#39;请选择所属分类&#39;, trigger: &#39;blur&#39; },
+                    ],
+                    goods_no: [
+                        { required: true, message: &#39;请输入商品货号&#39;, trigger: &#39;blur&#39; },
+                    ],
+                    stock_quantity: [
+                        { required: true, message: &#39;请输入库存数量&#39;, trigger: &#39;blur&#39; },
+                    ],
+                    market_price: [
+                        { required: true, message: &#39;请输入市场价格&#39;, trigger: &#39;blur&#39; },
+                    ],
+                    sell_price: [
+                        { required: true, message: &#39;请输入销售价格&#39;, trigger: &#39;blur&#39; },
+                    ],
+                    zhaiyao: [
+                        { required: true, message: &#39;请输入摘要信息&#39;, trigger: &#39;blur&#39; },
+                    ],
+                    content: [
+                        { required: true, message: &#39;请输入详细信息&#39;, trigger: &#39;blur&#39; },
+                    ],
+                }
+            };
+        },
+        methods: {
+            // 获取商品信息
+            getGoods() {
+                this.$http.get(this.$api.gsDetail + this.id, this.editForm)
+                    .then(rsp =&gt; this.editForm = rsp.data.message);
+            },
+
+            // 商品编辑
+            goodsEdit() {
+                this.$http.post(this.$api.gsEdit + this.id, this.editForm)
+                    .then(rsp =&gt; this.$alert(rsp.data.message));
+            },
+
+            // 先做表单校验, 通过后再调接口提交数据
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) =&gt; {
+                    if (valid) {
+                        this.goodsEdit();
+                    }
+                });
+            },
+
+            // 重置
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            }
+        },
+
+        created() {
+            this.getGoods();
+        }
+    }
+&lt;/script&gt;
+
+&lt;style scoped lang=&quot;less&quot;&gt;
+    .edit {
+        &amp;_form {
+            width: 500px;
+            padding: 20px 10px 0;
+        }
+    }
+&lt;/style&gt;
+</code></pre>
+<h4 id="-">集成富文本插件</h4>
+<ul>
+<li><a href="https://surmon-china.github.io/vue-quill-editor/">富文本插件官网</a></li>
+<li><a href="https://github.com/surmon-china/vue-quill-editor">富文本插件github</a></li>
+</ul>
+<h6 id="-">安装</h6>
+<ul>
+<li>命令: <code>npm i vue-quill-editor -S</code></li>
+</ul>
+<h6 id="-">使用</h6>
+<ul>
+<li><code>导入</code>富文本<code>样式</code>与<code>组件</code>, 然后注册成<code>子组件</code>使用</li>
+</ul>
+<pre><code class="lang-vue">&lt;template&gt;
+    &lt;el-form-item label=&quot;详细信息&quot; prop=&quot;content&quot;&gt;
+        &lt;quill-editor v-model=&quot;editForm.content&quot;&gt;&lt;/quill-editor&gt;
+    &lt;/el-form-item&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    import &#39;quill/dist/quill.core.css&#39;
+    import &#39;quill/dist/quill.snow.css&#39;
+    import &#39;quill/dist/quill.bubble.css&#39;
+    import { quillEditor } from &#39;vue-quill-editor&#39;
+
+    export default {
+      components: {
+        quillEditor
+      }
+    }
+&lt;/script&gt;
+</code></pre>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>

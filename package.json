@@ -1,0 +1,23 @@
+{
+  "name": "",
+  "version": "",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "css-loader": "^0.28.8",
+    "element-ui": "^2.0.11",
+    "less": "^2.7.3",
+    "less-loader": "^4.0.5",
+    "style-loader": "^0.19.1",
+    "vue": "^2.5.13",
+    "vue-router": "^3.0.1",
+    "webpack": "^3.10.0"
+  },
+  "devDependencies": {
+    "file-loader": "^1.1.6",
+    "html-webpack-plugin": "^2.30.1",
+    "url-loader": "^0.6.2",
+    "vue-loader": "^13.7.0",
+    "vue-template-compiler": "^2.5.13",
+    "webpack-dev-server": "^2.10.1"
+  }
+}
