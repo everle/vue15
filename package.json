@@ -1,6 +1,13 @@
 {
-  "name": "",
-  "version": "",
+  "name": "vueProject",
+  "version": "1.0.0",
+  "main": "webpack.config.js",
+  "scripts": {
+    "dev": "webpack-dev-server --inline --hot --open --port 8090"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "axios": "^0.17.1",
     "css-loader": "^0.28.8",
@@ -19,5 +26,6 @@
     "vue-loader": "^13.7.0",
     "vue-template-compiler": "^2.5.13",
     "webpack-dev-server": "^2.10.1"
-  }
+  },
+  "description": ""
 }
